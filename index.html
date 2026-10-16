@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RAG Thesis Assistant: Simulated Demo</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1b1f2a;--muted:#6b7280;--accent:#4f46e5;--ok:#059669;--line:#e5e7eb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1117;--card:#181b24;--text:#e8eaf0;--muted:#9aa3b2;--accent:#818cf8;--ok:#34d399;--line:#2a2f3c}}
+:root[data-theme="dark"]{--bg:#0f1117;--card:#181b24;--text:#e8eaf0;--muted:#9aa3b2;--accent:#818cf8;--ok:#34d399;--line:#2a2f3c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:16px}
+h1{font-size:18px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:12px;margin-bottom:12px}
+.badge{display:inline-block;background:var(--accent);color:#fff;border-radius:99px;padding:2px 10px;font-size:11px;margin-bottom:8px}
+.steps{display:flex;gap:6px;margin-bottom:12px}
+.dot{flex:1;height:5px;border-radius:3px;background:var(--line);transition:background .4s}
+.dot.on{background:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;min-height:300px}
+.title{font-weight:600;margin-bottom:10px}
+.file{display:flex;align-items:center;gap:10px;border:1.5px dashed var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
+.file b{font-size:13px}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .25s}
+.chunks{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.chunk{width:22px;height:22px;border-radius:5px;background:var(--line);font-size:9px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .25s}
+.chunk.on{background:var(--ok);color:#fff}
+.sum h4{margin:8px 0 2px;font-size:13px;color:var(--accent)}
+.sum p{margin:0;font-size:13px}
+.chat{display:flex;flex-direction:column;gap:8px}
+.msg{padding:8px 12px;border-radius:12px;max-width:88%;font-size:13px}
+.q{align-self:flex-end;background:var(--accent);color:#fff}
+.a{align-self:flex-start;background:var(--bg);border:1px solid var(--line)}
+.src{font-size:11px;color:var(--muted);margin-top:4px;border-left:3px solid var(--ok);padding-left:6px}
+.hide{display:none}
+.row{display:flex;gap:8px;margin-top:12px}
+button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:14px;cursor:pointer}
+button.p{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cap{color:var(--muted);font-size:12px;margin-top:8px;min-height:32px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="badge">SIMULATED DEMO, NOT A LIVE SYSTEM</span>
+  <h1>Student Documentation Assistant</h1>
+  <div class="sub">How the RAG project will work for a teacher</div>
+  <div class="steps"><div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div><div class="dot" id="d3"></div></div>
+  <div class="card" id="card"></div>
+  <div class="cap" id="cap"></div>
+  <div class="row"><button class="p" id="play">Replay</button><button id="theme">Toggle theme</button></div>
+</div>
+<script>
+var card=document.getElementById('card'),cap=document.getElementById('cap'),timers=[];
+function T(fn,ms){timers.push(setTimeout(fn,ms))}
+function dots(n){for(var i=0;i<4;i++){document.getElementById('d'+i).className='dot'+(i<=n?' on':'')}}
+function typeInto(el,html,speed,done){var i=0,tmp=document.createElement('div');tmp.innerHTML=html;var txt=tmp.textContent;el.textContent='';
+  function s(){if(i<=txt.length){el.textContent=txt.slice(0,i);i+=2;timers.push(setTimeout(s,speed))}else{el.innerHTML=html;if(done)done()}}s()}
+function run(){
+  timers.forEach(clearTimeout);timers=[];
+  dots(0);cap.textContent='Step 1: Teacher uploads a student PDF.';
+  card.innerHTML='<div class="title">Upload documentation</div><div class="file"><span style="font-size:24px">📄</span><div><b>Smart_Attendance_System.pdf</b><div style="font-size:12px;color:var(--muted)">Aarav Sharma · 42 pages</div></div></div><div style="font-size:12px;color:var(--muted)" id="st">Uploading...</div><div class="bar"><i id="b1"></i></div>';
+  T(function(){document.getElementById('b1').style.width='100%'},200);
+  T(function(){document.getElementById('st').textContent='Text extracted ✔'},1600);
+  T(step2,2600);
+}
+function step2(){
+  dots(1);cap.textContent='Step 2: Text is split into chunks and turned into embeddings, then stored in the vector database.';
+  var h='<div class="title">Indexing document</div><div style="font-size:12px;color:var(--muted)">Chunking · Embedding · Storing</div><div class="chunks" id="ch">';
+  for(var i=1;i<=36;i++)h+='<div class="chunk">'+i+'</div>';
+  h+='</div><div style="font-size:12px;margin-top:10px" id="cn">0 / 36 chunks indexed</div>';
+  card.innerHTML=h;var n=0;
+  function tick(){var c=document.querySelectorAll('.chunk');if(n<36){c[n].className='chunk on';n++;document.getElementById('cn').textContent=n+' / 36 chunks indexed';timers.push(setTimeout(tick,70))}else{T(step3,700)}}tick();
+}
+function step3(){
+  dots(2);cap.textContent='Step 3: The AI writes an automatic summary for the teacher in seconds.';
+  card.innerHTML='<div class="title">Automatic summary</div><div class="sum" id="sm"></div>';
+  var parts=[['Context','Manual attendance wastes lecture time and allows proxy marking.'],['Objectives','Cut attendance time under 1 minute, remove proxies, create monthly reports.'],['Methodology','OpenCV face detection, FaceNet embeddings, Flask + MySQL, React dashboard.'],['Results','94.2% accuracy in normal light, 81% in low light.'],['Limitations','Struggles with masks, side poses and poor lighting.']];
+  var sm=document.getElementById('sm'),i=0;
+  function next(){if(i>=parts.length){T(step4,1400);return}
+    var h=document.createElement('h4');h.textContent=parts[i][0];var p=document.createElement('p');sm.appendChild(h);sm.appendChild(p);
+    typeInto(p,parts[i][1],18,function(){i++;next()})}
+  next();
+}
+function step4(){
+  dots(3);cap.textContent='Step 4: The teacher asks a question. The agent answers only from the retrieved document passages.';
+  card.innerHTML='<div class="title">Ask the document</div><div class="chat" id="chat"></div>';
+  var chat=document.getElementById('chat');
+  T(function(){var q=document.createElement('div');q.className='msg q';q.textContent='What accuracy did the system achieve in low light?';chat.appendChild(q)},500);
+  T(function(){var a=document.createElement('div');a.className='msg a';a.innerHTML='<span id="at"></span><div class="src hide" id="sr">Source: Results section, chunk 27</div>';chat.appendChild(a);
+    typeInto(document.getElementById('at'),'The system reached 81% accuracy under low light, compared with 94.2% in normal lighting.',22,function(){document.getElementById('sr').className='src'})},1600);
+  T(function(){var q=document.createElement('div');q.className='msg q';q.textContent='Who funded the project?';chat.appendChild(q)},6200);
+  T(function(){var a=document.createElement('div');a.className='msg a';a.textContent='I could not find that in the document.';chat.appendChild(a);cap.textContent='If the answer is not in the document, it says so instead of guessing.'},7200);
+}
+document.getElementById('play').onclick=run;
+document.getElementById('theme').onclick=function(){var r=document.documentElement;r.setAttribute('data-theme',r.getAttribute('data-theme')==='dark'?'light':'dark')};
+run();
+</script>
+</body>
+</html>
